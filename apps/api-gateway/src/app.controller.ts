@@ -1,0 +1,51 @@
+import { Controller, Get, Inject, Param, Post, Body } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { User } from './../../../libs/common/src/interfaces/user.interface';
+import { Order } from './../../../libs/common/src/interfaces/order.interface';
+
+@Controller()
+export class AppController {
+  constructor(
+    @Inject('USER_SERVICE') private readonly userClient: ClientProxy,
+    @Inject('ORDER_SERVICE') private readonly orderClient: ClientProxy,
+    @Inject('AUTH_SERVICE') private client: ClientProxy
+  ) {}
+
+  @Get('users')
+  async getUsers() {
+    return this.userClient.send({ cmd: 'get_users' }, {});
+  }
+
+  @Get('users/:id')
+  async getUser(@Param('id') id: string) {
+    return this.userClient.send({ cmd: 'get_user' }, id);
+  }
+
+  @Post('users')
+  async createUser(@Body() user: User) {
+    return this.userClient.send({ cmd: 'create_user' }, user);
+  }
+
+  @Get('orders')
+  async getOrders() {
+    return this.orderClient.send({ cmd: 'get_orders' }, {});
+  }
+
+  @Get('orders/:id')
+  async getOrder(@Param('id') id: string) {
+    return this.orderClient.send({ cmd: 'get_order' }, id);
+  }
+
+  @Post('orders')
+  async createOrder(@Body() order: Order) {
+    return this.orderClient.send({ cmd: 'create_order' }, order);
+  }
+@Post('login')
+   async login(username: string, password: string) {
+    return this.client.send({ cmd: 'login' }, { username, password }).toPromise();
+  }
+
+  async verify(token: string) {
+    return this.client.send({ cmd: 'verify_token' }, token).toPromise();
+  }
+}

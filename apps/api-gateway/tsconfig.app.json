@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "outDir": "../../dist/apps/api-gateway"
+  },
+  "include": [
+    "src/**/*",
+    "../../libs/common/src/**/*",
+    "../../libs/kafka-lib/src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
