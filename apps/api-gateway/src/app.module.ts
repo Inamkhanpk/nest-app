@@ -32,6 +32,11 @@ import { APP_GUARD } from '@nestjs/core';
         transport: Transport.TCP,
         options: { port: 3003 }
       },
+       {
+        name: 'AUTH_SERVICE',
+        transport: Transport.TCP,
+        options: { port: 3004 }
+      },
     ]),
     
   ],

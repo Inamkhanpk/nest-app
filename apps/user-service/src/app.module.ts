@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { AppController } from './app.controller';
-
+import { UserService } from './app.service';
 import { RedisModule } from 'libs/redis/redis.module';
 
 @Module({
@@ -22,7 +22,9 @@ import { RedisModule } from 'libs/redis/redis.module';
     RedisModule
 
   ],
+  providers:[UserService],
   controllers: [AppController],
+  exports:[UserService]
 })
 export class AppModule {}
 
