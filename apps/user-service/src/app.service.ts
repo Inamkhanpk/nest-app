@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { REDIS_CLIENT } from 'libs/redis/redis.module';
 import Redis from 'ioredis';
-
+import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from '../../../libs/common/src/dto/create-user.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -22,7 +23,7 @@ export class UserService {
 
   async findById(id: number): Promise<User | null> {
     const cachedUser = await this.redis.get(`user:${id}`);
-  
+
     if (cachedUser) {
       return JSON.parse(cachedUser);
     }
@@ -35,8 +36,14 @@ export class UserService {
     return user;
   }
 
-  async createUser(userData:User) :  Promise<User>{
-      const user = this.userRepo.create(userData);
+  async createUser(dto: CreateUserDto) {
+   const hashed = await bcrypt.hash(dto.password, 10);
+      const user = this.userRepo.create({ ...dto, password: hashed });
+      
      return this.userRepo.save(user);
+  }
+
+  async findByEmail(email: string) {
+    return this.userRepo.findOne({ where: { email } });
   }
 }

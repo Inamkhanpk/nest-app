@@ -2,13 +2,15 @@ import { Controller, Get, Inject, Param, Post, Body } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from './../../../libs/common/src/interfaces/user.interface';
 import { Order } from './../../../libs/common/src/interfaces/order.interface';
+import { CreateUserDto } from '../../../libs/common/src/dto/create-user.dto';
+import { SignInDto } from '../../../libs/common/src/dto/signin.dto';
 
 @Controller()
 export class AppController {
   constructor(
     @Inject('USER_SERVICE') private readonly userClient: ClientProxy,
     @Inject('ORDER_SERVICE') private readonly orderClient: ClientProxy,
-    @Inject('AUTH_SERVICE') private client: ClientProxy
+    @Inject('AUTH_SERVICE') private authClient: ClientProxy
   ) {}
 
   @Get('users')
@@ -40,12 +42,18 @@ export class AppController {
   async createOrder(@Body() order: Order) {
     return this.orderClient.send({ cmd: 'create_order' }, order);
   }
-@Post('login')
-   async login(username: string, password: string) {
-    return this.client.send({ cmd: 'login' }, { username, password }).toPromise();
+ @Post('signup')
+  signup(@Body() dto: CreateUserDto) {
+    return this.authClient.send({ cmd: 'auth_signup' }, dto);
   }
 
-  async verify(token: string) {
-    return this.client.send({ cmd: 'verify_token' }, token).toPromise();
+  @Post('signin')
+  signin(@Body() dto: SignInDto) {
+    return this.authClient.send({ cmd: 'auth_signin' }, dto);
+  }
+
+  @Post('signout')
+  signout() {
+    return this.authClient.send({ cmd: 'auth_signout' }, {});
   }
 }
